@@ -1,54 +1,76 @@
 // frontend/src/router/Routes.jsx
 
-import React from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import React, { Suspense, lazy } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
 
-// Page Components
-import Home from '../pages/Home';
-import Login from '../pages/Login';
-import Dashboard from '../pages/Dashboard';
-import About from '../pages/About';
-import Features from '../pages/Features';
-import Viewer from '../pages/Viewer';
+// Lazy-loaded components for better performance
+const Home = lazy(() => import('../pages/Home'));
+const About = lazy(() => import('../pages/About'));
+const Dashboard = lazy(() => import('../pages/Dashboard'));
+const Features = lazy(() => import('../pages/Features'));
+const Login = lazy(() => import('../pages/Login'));
+const Viewer = lazy(() => import('../pages/Viewer'));
+const NotFound = lazy(() => import('../pages/NotFound'));
 
-// Protected Route Wrapper
+/**
+ * ProtectedRoute Component
+ * Ensures only authenticated users can access protected routes
+ */
 const ProtectedRoute = ({ children }) => {
-  const isAuthenticated = localStorage.getItem('token'); // Example auth check
-  return isAuthenticated ? children : <Navigate to="/login" />;
+    const { user } = useAuth();
+
+    if (!user) {
+        return <Navigate to="/login" replace />;
+    }
+
+    return children;
 };
 
-// Application Routes
+/**
+ * Application Routes Configuration
+ */
 const AppRoutes = () => {
-  return (
-    <Routes>
-      {/* Public Routes */}
-      <Route path="/" element={<Home />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/about" element={<About />} />
-      <Route path="/features" element={<Features />} />
+    return (
+        <Router>
+            <Header />
+            <Suspense fallback={<div>Loading...</div>}>
+                <Routes>
+                    {/* Public Routes */}
+                    <Route path="/" element={<Home />} exact />
+                    <Route path="/about" element={<About />} exact />
+                    <Route path="/features" element={<Features />} exact />
+                    <Route path="/login" element={<Login />} exact />
 
-      {/* Protected Routes */}
-      <Route
-        path="/dashboard"
-        element={
-          <ProtectedRoute>
-            <Dashboard />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/viewer"
-        element={
-          <ProtectedRoute>
-            <Viewer />
-          </ProtectedRoute>
-        }
-      />
+                    {/* Protected Routes */}
+                    <Route
+                        path="/dashboard"
+                        element={
+                            <ProtectedRoute>
+                                <Dashboard />
+                            </ProtectedRoute>
+                        }
+                        exact
+                    />
+                    <Route
+                        path="/viewer/:reportId"
+                        element={
+                            <ProtectedRoute>
+                                <Viewer />
+                            </ProtectedRoute>
+                        }
+                        exact
+                    />
 
-      {/* Catch-All Route */}
-      <Route path="*" element={<div className="text-center text-red-500 mt-8">404 - Page Not Found</div>} />
-    </Routes>
-  );
+                    {/* Fallback 404 Route */}
+                    <Route path="*" element={<NotFound />} />
+                </Routes>
+            </Suspense>
+            <Footer />
+        </Router>
+    );
 };
 
 export default AppRoutes;

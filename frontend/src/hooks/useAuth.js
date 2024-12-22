@@ -1,23 +1,40 @@
+// frontend/src/hooks/useAuth.js
+
+import { useContext, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import AuthContext from '../context/AuthContext';
+
 /**
- * useAuth.js
- *
- * A custom hook that allows components to easily consume AuthContext.
- * Components can then call, for example:
- *   const { isAuthenticated, handleLogin, handleLogout } = useAuth();
- *
- * This encourages a cleaner, simpler pattern for authentication-related logic
- * across both VC dashboards and startup submission pages.
+ * useAuth - Custom hook for managing authentication guards.
+ * 
+ * ### Features:
+ * - Protect routes by validating authentication status.
+ * - Redirect unauthenticated users to the login page.
+ * - Preserve the intended route for post-login redirection.
  */
+const useAuth = () => {
+    const { isAuthenticated, loading, user } = useContext(AuthContext);
+    const navigate = useNavigate();
+    const location = useLocation();
 
-import { useContext } from 'react';
-import { AuthContext } from '../context/AuthContext';
+    useEffect(() => {
+        if (loading) return; // Prevent redirect while auth state is still loading
 
-export default function useAuth() {
-  const context = useContext(AuthContext);
+        if (!isAuthenticated) {
+            // Store the current location to redirect after successful login
+            navigate('/login', { state: { from: location } });
+        }
+    }, [isAuthenticated, loading, navigate, location]);
 
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
+    /**
+     * getRedirectPath - Determine the post-login redirection path.
+     * @returns {string} Path to redirect after successful login.
+     */
+    const getRedirectPath = () => {
+        return location.state?.from?.pathname || '/dashboard';
+    };
 
-  return context;
-}
+    return { isAuthenticated, user, loading, getRedirectPath };
+};
+
+export default useAuth;

@@ -1,63 +1,183 @@
-/* frontend/src/styles/tailwind.css */
+/* frontend/src/styles/global.css */
 
-/* Tailwind CSS Directives */
+/* ================================
+   Global Styles
+=================================== */
 
-/* 1. Base Styles */
-/* Includes preflight (reset styles) and common typography styles */
-@tailwind base;
-
-/* 2. Component Styles */
-/* Includes reusable component classes */
-@tailwind components;
-
-/* 3. Utility Styles */
-/* Includes utility classes for fast styling */
-@tailwind utilities;
-
-/* 4. Custom Base Styles (Optional Overrides) */
-body {
-  @apply bg-white text-gray-800 antialiased;
+/* Base Reset */
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-/* 5. Root Theme Variables (Custom CSS Variables for Theme) */
+/* Root Variables */
 :root {
-  --primary-color: #003366; /* Navy Blue */
-  --secondary-color: #EFEFEF; /* Light Grey */
-  --accent-color: #00A676; /* Emerald Green */
-
-  --font-primary: 'Poppins', sans-serif;
-  --font-secondary: 'Open Sans', sans-serif;
+    --primary-color: #003366; /* Navy Blue */
+    --secondary-color: #EFEFEF; /* Light Grey */
+    --accent-color: #00A676; /* Emerald Green */
+    --text-color: #333333;
+    --background-color: #FFFFFF;
+    --font-primary: 'Poppins', sans-serif;
+    --font-secondary: 'Open Sans', sans-serif;
+    --transition-default: all 0.3s ease-in-out;
 }
 
-/* 6. Custom Classes (Optional Reusable Styles) */
+/* Body */
+body {
+    font-family: var(--font-secondary);
+    font-size: 16px;
+    color: var(--text-color);
+    background-color: var(--background-color);
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-primary);
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+/* Links */
+a {
+    text-decoration: none;
+    color: var(--primary-color);
+    transition: var(--transition-default);
+}
+
+a:hover {
+    color: var(--accent-color);
+}
+
+/* Buttons */
+button {
+    font-family: var(--font-primary);
+    cursor: pointer;
+    transition: var(--transition-default);
+}
+
+button:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+/* Utility Classes */
 .container {
-  @apply mx-auto px-4 sm:px-6 lg:px-8;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
 }
 
-.button-primary {
-  @apply bg-[var(--primary-color)] text-white font-medium rounded-md px-4 py-2 hover:bg-[var(--accent-color)] transition-all duration-300;
+.text-center {
+    text-align: center;
 }
 
-.button-secondary {
-  @apply bg-[var(--secondary-color)] text-[var(--primary-color)] font-medium rounded-md px-4 py-2 hover:bg-gray-300 transition-all duration-300;
+.hidden {
+    display: none;
 }
 
-/* 7. Scrollbar Customization */
+.visible {
+    display: block;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        padding: 0 0.5rem;
+    }
+
+    body {
+        font-size: 14px;
+    }
+
+    h1 {
+        font-size: 1.75rem;
+    }
+
+    h2 {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    h1 {
+        font-size: 1.5rem;
+    }
+
+    h2 {
+        font-size: 1.25rem;
+    }
+}
+
+/* Scrollbar Customization */
 ::-webkit-scrollbar {
-  width: 8px;
+    width: 8px;
+    height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--secondary-color);
+    background: var(--secondary-color);
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: var(--primary-color);
-  border-radius: 20px;
-  border: 2px solid var(--secondary-color);
+    background: var(--primary-color);
+    border-radius: 4px;
 }
 
-/* 8. Accessibility Focus States */
-*:focus {
-  @apply outline-none ring-2 ring-[var(--accent-color)] ring-offset-2;
+::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-color);
+}
+
+/* Global Component Overrides */
+input, textarea {
+    font-family: var(--font-secondary);
+    border: 1px solid var(--secondary-color);
+    padding: 0.5rem;
+    border-radius: 4px;
+    outline: none;
+    transition: var(--transition-default);
+}
+
+input:focus,
+textarea:focus {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 5px rgba(0, 166, 118, 0.2);
+}
+
+/* Animation Utilities */
+.fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* Page-Specific Adjustments */
+.page-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.page-footer {
+    text-align: center;
+    margin-top: 2rem;
+    padding: 1rem 0;
+    background-color: var(--secondary-color);
+}
+
+/* Error Message */
+.error-message {
+    color: red;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
 }

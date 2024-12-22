@@ -2,99 +2,96 @@
 
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import Button from '../components/Button/Button';
-import { getReports } from '../services/reportService';
+import { Document, Page, pdfjs } from 'react-pdf';
+import Loader from '../components/Loader';
+
+// PDF Worker Configuration
+pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 const Viewer = () => {
-    const { reportId } = useParams();
-    const [reportUrl, setReportUrl] = useState('');
-    const [loading, setLoading] = useState(true);
+    const { pdfId } = useParams();
+    const [pdfUrl, setPdfUrl] = useState(null);
+    const [numPages, setNumPages] = useState(null);
     const [error, setError] = useState(null);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        async function fetchReport() {
+        const fetchPDF = async () => {
             try {
-                setLoading(true);
-                const reportData = await getReports(reportId);
-                if (reportData && reportData.pdf_url) {
-                    setReportUrl(reportData.pdf_url);
-                } else {
-                    throw new Error('Report not found.');
+                if (!pdfId) {
+                    throw new Error('PDF ID is missing in the URL parameters.');
                 }
+                // Mocked API call for demonstration
+                const fetchedUrl = `/api/reports/${pdfId}.pdf`;
+                setPdfUrl(fetchedUrl);
             } catch (err) {
-                console.error('Failed to fetch report:', err);
-                setError('Failed to load the report. Please try again later.');
+                setError(err.message || 'Failed to load the PDF file.');
             } finally {
                 setLoading(false);
             }
-        }
+        };
 
-        fetchReport();
-    }, [reportId]);
+        fetchPDF();
+    }, [pdfId]);
+
+    const onDocumentLoadSuccess = ({ numPages }) => {
+        setNumPages(numPages);
+    };
 
     const handleDownload = () => {
-        if (reportUrl) {
+        if (pdfUrl) {
             const link = document.createElement('a');
-            link.href = reportUrl;
-            link.download = `report_${reportId}.pdf`;
+            link.href = pdfUrl;
+            link.download = `report-${pdfId}.pdf`;
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
         }
     };
 
-    const handleShare = () => {
-        if (navigator.share) {
-            navigator.share({
-                title: 'Report Viewer',
-                text: 'Check out this report from GFVRHO.',
-                url: reportUrl,
-            }).catch((err) => console.error('Error sharing report:', err));
-        } else {
-            alert('Share functionality is not supported in your browser.');
-        }
-    };
+    if (loading) {
+        return <Loader />;
+    }
+
+    if (error) {
+        return (
+            <div className="flex justify-center items-center h-screen">
+                <p className="text-red-600 font-semibold">{error}</p>
+            </div>
+        );
+    }
 
     return (
-        <div className="flex flex-col min-h-screen bg-gray-50 text-gray-800">
-            {/* Header */}
-            <Header />
-
-            {/* Main Content */}
-            <main className="flex-1 container mx-auto px-6 py-12">
-                <h1 className="text-3xl font-bold text-[#003366] mb-6">Report Viewer</h1>
-
-                {loading ? (
-                    <p className="text-center text-gray-500">Loading report...</p>
-                ) : error ? (
-                    <p className="text-center text-red-500">{error}</p>
-                ) : (
-                    <div className="flex flex-col items-center">
-                        <iframe
-                            src={reportUrl}
-                            title="Report PDF"
-                            className="w-full md:w-3/4 h-[500px] border border-gray-300 rounded-md"
-                        ></iframe>
-                        <div className="mt-6 flex gap-4">
-                            <Button
-                                text="Download Report"
-                                onClick={handleDownload}
-                                className="bg-[#00A676] text-white hover:bg-[#007A5C]"
+        <div className="container mx-auto p-4">
+            <h1 className="text-2xl font-bold mb-4 text-center">PDF Viewer</h1>
+            <div className="flex justify-center mb-4">
+                <button
+                    onClick={handleDownload}
+                    className="bg-emerald-500 text-white px-4 py-2 rounded-md hover:bg-emerald-600 transition"
+                >
+                    Download PDF
+                </button>
+            </div>
+            {pdfUrl ? (
+                <div className="flex justify-center overflow-auto border border-gray-300 rounded-md shadow-md">
+                    <Document
+                        file={pdfUrl}
+                        onLoadSuccess={onDocumentLoadSuccess}
+                        onLoadError={() => setError('Failed to load PDF content.')}
+                    >
+                        {Array.from(new Array(numPages), (el, index) => (
+                            <Page
+                                key={`page_${index + 1}`}
+                                pageNumber={index + 1}
+                                renderTextLayer={false}
+                                renderAnnotationLayer={false}
                             />
-                            <Button
-                                text="Share Report"
-                                onClick={handleShare}
-                                className="bg-[#003366] text-white hover:bg-[#002244]"
-                            />
-                        </div>
-                    </div>
-                )}
-            </main>
-
-            {/* Footer */}
-            <Footer />
+                        ))}
+                    </Document>
+                </div>
+            ) : (
+                <p className="text-gray-600 text-center">No PDF file available.</p>
+            )}
         </div>
     );
 };

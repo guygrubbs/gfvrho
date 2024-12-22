@@ -1,93 +1,75 @@
+// frontend/src/components/Header.jsx
+
 import React from 'react';
-import Button from './Button/Button';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
 
 const Header = () => {
-  return (
-    <header className="sticky top-0 z-50 bg-white shadow-sm">
-      <nav className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-        {/* Logo Placeholder */}
-        <div className="flex items-center space-x-2">
-          {/* Replace with your own logo/image as needed */}
-          <div className="w-8 h-8 bg-emerald-500 rounded-full" />
-          <span className="text-xl font-bold" style={{ fontFamily: 'Poppins' }}>
-            gfvrho
-          </span>
-        </div>
+    const { user, logout } = useAuth();
+    const navigate = useNavigate();
 
-        {/* Menu Items */}
-        <ul className="hidden md:flex items-center space-x-6 text-sm" style={{ fontFamily: 'Open Sans' }}>
-          <li>
-            <a 
-              href="#home" 
-              className="text-gray-700 hover:text-emerald-600 transition-colors"
-            >
-              Home
-            </a>
-          </li>
-          <li>
-            <a 
-              href="#how-it-works" 
-              className="text-gray-700 hover:text-emerald-600 transition-colors"
-            >
-              How It Works
-            </a>
-          </li>
-          <li>
-            <a 
-              href="#submit-pitch-deck" 
-              className="text-gray-700 hover:text-emerald-600 transition-colors"
-            >
-              Submit Pitch Deck
-            </a>
-          </li>
-          <li>
-            <a 
-              href="#resources-reports" 
-              className="text-gray-700 hover:text-emerald-600 transition-colors"
-            >
-              Resources &amp; Reports
-            </a>
-          </li>
-          <li>
-            <a 
-              href="#about-us" 
-              className="text-gray-700 hover:text-emerald-600 transition-colors"
-            >
-              About Us
-            </a>
-          </li>
-          <li>
-            <a 
-              href="#contact" 
-              className="text-gray-700 hover:text-emerald-600 transition-colors"
-            >
-              Contact
-            </a>
-          </li>
-        </ul>
+    const handleLogout = () => {
+        logout();
+        navigate('/login');
+    };
 
-        {/* CTA Button */}
-        <div className="hidden md:block">
-          <Button variant="primary" onClick={() => console.log('Submit Pitch')}>
-            Submit Pitch
-          </Button>
-        </div>
+    return (
+        <header className="bg-navy-700 text-white py-4 px-6 shadow-md">
+            <nav className="container mx-auto flex justify-between items-center">
+                {/* Logo */}
+                <Link to="/" className="text-xl font-bold">
+                    GFVRHO
+                </Link>
 
-        {/* Hamburger Menu (for mobile) - optional */}
-        <div className="md:hidden">
-          <button 
-            type="button" 
-            className="text-gray-700 hover:text-emerald-600 transition-colors focus:outline-none"
-          >
-            {/* Icon placeholder, you can replace with a proper icon component */}
-            <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          </button>
-        </div>
-      </nav>
-    </header>
-  );
+                {/* Navigation Links */}
+                <ul className="flex space-x-6">
+                    <li>
+                        <Link to="/" className="hover:text-emerald-400">
+                            Home
+                        </Link>
+                    </li>
+                    <li>
+                        <Link to="/about" className="hover:text-emerald-400">
+                            About
+                        </Link>
+                    </li>
+                    <li>
+                        <Link to="/features" className="hover:text-emerald-400">
+                            Features
+                        </Link>
+                    </li>
+                    {user ? (
+                        <>
+                            <li>
+                                <Link to="/dashboard" className="hover:text-emerald-400">
+                                    Dashboard
+                                </Link>
+                            </li>
+                            <li>
+                                <Link to="/viewer/sample-report" className="hover:text-emerald-400">
+                                    Viewer
+                                </Link>
+                            </li>
+                            <li>
+                                <button
+                                    onClick={handleLogout}
+                                    className="text-red-400 hover:text-red-300"
+                                >
+                                    Logout
+                                </button>
+                            </li>
+                        </>
+                    ) : (
+                        <li>
+                            <Link to="/login" className="hover:text-emerald-400">
+                                Login
+                            </Link>
+                        </li>
+                    )}
+                </ul>
+            </nav>
+        </header>
+    );
 };
 
 export default Header;

@@ -1,48 +1,63 @@
 // frontend/src/tests/pages/Viewer.test.jsx
 
+import React from 'react';
 import { render, screen } from '@testing-library/react';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import Viewer from '../../pages/Viewer';
-import '@testing-library/jest-dom';
-import userEvent from '@testing-library/user-event';
+import '@testing-library/jest-dom/extend-expect';
 
-// Mock dependencies
+// Mock API call if the Viewer fetches PDFs dynamically
 jest.mock('../../services/apiClient', () => ({
-    get: jest.fn(() => Promise.resolve({ data: 'mock-pdf-url' })),
+    get: jest.fn(() => Promise.resolve({ data: 'mocked-pdf-data' })),
 }));
 
-describe('Viewer Page', () => {
-    it('renders the Viewer page correctly', () => {
-        render(<Viewer />);
-        expect(screen.getByText('Report Viewer')).toBeInTheDocument();
+describe('Viewer Page Tests', () => {
+    test('renders Viewer page with PDF content', async () => {
+        render(
+            <MemoryRouter initialEntries={['/viewer/123']}>
+                <Routes>
+                    <Route path="/viewer/:id" element={<Viewer />} />
+                </Routes>
+            </MemoryRouter>
+        );
+
+        expect(screen.getByText(/Loading PDF/i)).toBeInTheDocument();
+
+        // Mock PDF rendering confirmation
+        // Assume that PDF component has rendered successfully
+        expect(await screen.findByText(/PDF Loaded Successfully/i)).toBeInTheDocument();
     });
 
-    it('displays a loading state while fetching the PDF', async () => {
-        render(<Viewer />);
-        expect(screen.getByText('Loading report...')).toBeInTheDocument();
-    });
-
-    it('renders the PDF iframe when loaded successfully', async () => {
-        render(<Viewer />);
-        const iframe = await screen.findByTitle('PDF Viewer');
-        expect(iframe).toBeInTheDocument();
-    });
-
-    it('handles PDF load errors gracefully', async () => {
+    test('handles missing PDF gracefully', async () => {
         jest.mock('../../services/apiClient', () => ({
-            get: jest.fn(() => Promise.reject(new Error('Failed to load PDF'))),
+            get: jest.fn(() => Promise.reject(new Error('PDF not found'))),
         }));
 
-        render(<Viewer />);
-        const errorText = await screen.findByText('Failed to load the report. Please try again.');
-        expect(errorText).toBeInTheDocument();
+        render(
+            <MemoryRouter initialEntries={['/viewer/invalid-id']}>
+                <Routes>
+                    <Route path="/viewer/:id" element={<Viewer />} />
+                </Routes>
+            </MemoryRouter>
+        );
+
+        expect(await screen.findByText(/Failed to load PDF/i)).toBeInTheDocument();
     });
 
-    it('triggers download functionality on button click', async () => {
-        render(<Viewer />);
-        const downloadButton = screen.getByRole('button', { name: /Download Report/i });
-        expect(downloadButton).toBeInTheDocument();
+    test('validates dynamic route parameter is passed correctly', () => {
+        const testId = '456';
 
-        userEvent.click(downloadButton);
-        expect(window.location.href).toContain('mock-pdf-url');
+        render(
+            <MemoryRouter initialEntries={[`/viewer/${testId}`]}>
+                <Routes>
+                    <Route
+                        path="/viewer/:id"
+                        element={<Viewer />}
+                    />
+                </Routes>
+            </MemoryRouter>
+        );
+
+        expect(screen.getByText(`Viewing PDF with ID: ${testId}`)).toBeInTheDocument();
     });
 });

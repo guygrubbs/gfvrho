@@ -1,81 +1,105 @@
+// frontend/src/pages/Login.jsx
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import TextField from '../components/Form/TextField';
-import Button from '../components/Button/Button';
-import * as authService from '../services/authService';
+import useAuth from '../hooks/useAuth';
+import authService from '../services/authService';
 
+/**
+ * Login Page Component
+ * Handles user authentication and redirection logic.
+ */
 const Login = () => {
-  const navigate = useNavigate();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [errorMsg, setErrorMsg] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setErrorMsg('');
+    const navigate = useNavigate();
+    const { checkAuthStatus } = useAuth();
 
-    if (!email.trim() || !password.trim()) {
-      setErrorMsg('Please provide both email and password.');
-      return;
-    }
+    /**
+     * Handles form submission for login.
+     * Validates inputs and manages authentication process.
+     */
+    const handleLogin = async (e) => {
+        e.preventDefault();
+        setError('');
+        setLoading(true);
 
-    try {
-      // authService.login is expected to throw an error or return a token on success
-      await authService.login(email, password);
-      // On success, redirect user to the dashboard
-      navigate('/dashboard');
-    } catch (error) {
-      // Show any error from the login call
-      setErrorMsg(error.message || 'Login failed. Please check your credentials.');
-    }
-  };
+        if (!email || !password) {
+            setError('Both email and password are required.');
+            setLoading(false);
+            return;
+        }
 
-  return (
-    <>
-      <Header />
-      <div className="min-h-screen flex flex-col justify-center items-center bg-gray-50">
-        <div className="w-full max-w-md bg-white p-6 rounded shadow-md">
-          <h2
-            className="text-2xl font-semibold text-center mb-6"
-            style={{ fontFamily: 'Poppins', color: '#003366' }}
-          >
-            VC Dashboard Login
-          </h2>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <TextField
-              label="Email"
-              name="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter your email"
-              required
-            />
-            <TextField
-              label="Password"
-              name="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter your password"
-              required
-            />
-            {errorMsg && (
-              <p className="text-red-500 text-sm" style={{ fontFamily: 'Open Sans' }}>
-                {errorMsg}
-              </p>
-            )}
-            <Button type="submit" variant="primary" className="w-full">
-              Submit
-            </Button>
-          </form>
+        try {
+            await authService.login(email, password);
+            await checkAuthStatus(); // Update authentication context state
+            navigate('/dashboard', { replace: true });
+        } catch (err) {
+            console.error('Login failed:', err);
+            setError(err.response?.data?.message || 'Failed to log in. Please try again.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (
+        <div className="flex items-center justify-center min-h-screen bg-gray-100">
+            <div className="bg-white p-6 rounded-md shadow-md w-full max-w-md">
+                <h2 className="text-2xl font-bold mb-4 text-center">Login</h2>
+                {error && (
+                    <div className="text-red-600 text-sm mb-4">
+                        {error}
+                    </div>
+                )}
+                <form onSubmit={handleLogin} className="space-y-4">
+                    <div>
+                        <label htmlFor="email" className="block text-sm font-medium">
+                            Email
+                        </label>
+                        <input
+                            id="email"
+                            type="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            className="mt-1 p-2 w-full border rounded-md"
+                            required
+                        />
+                    </div>
+                    <div>
+                        <label htmlFor="password" className="block text-sm font-medium">
+                            Password
+                        </label>
+                        <input
+                            id="password"
+                            type="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            className="mt-1 p-2 w-full border rounded-md"
+                            required
+                        />
+                    </div>
+                    <button
+                        type="submit"
+                        disabled={loading}
+                        className={`w-full p-2 text-white rounded-md ${
+                            loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
+                        }`}
+                    >
+                        {loading ? 'Logging in...' : 'Login'}
+                    </button>
+                </form>
+                <div className="mt-4 text-center text-sm">
+                    Don't have an account?{' '}
+                    <a href="/signup" className="text-blue-600 hover:underline">
+                        Sign up
+                    </a>
+                </div>
+            </div>
         </div>
-      </div>
-      <Footer />
-    </>
-  );
+    );
 };
 
 export default Login;

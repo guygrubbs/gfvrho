@@ -1,131 +1,108 @@
-/**
- * @file Login.test.jsx
- *
- * Requirements:
- * - Use Jest + React Testing Library.
- * - Render <Login />, simulate form input, test authService.login() call.
- * - Check redirect or error handling.
- */
+// frontend/src/tests/pages/Login.test.jsx
 
-import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-// MemoryRouter or a mock for react-router-dom is needed for testing navigation
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-
-// Mock the authService to avoid real API calls
-import * as authService from '../../services/authService';
-jest.mock('../../services/authService');
-
-// Mock useNavigate from react-router-dom
-jest.mock('react-router-dom', () => {
-  const original = jest.requireActual('react-router-dom');
-  return {
-    ...original,
-    useNavigate: () => jest.fn(),
-  };
-});
-
 import Login from '../../pages/Login';
+import AuthContext from '../../context/AuthContext';
 
-describe('Login Page', () => {
-  let navigateMock;
+describe('Login Page Tests', () => {
+    let mockLogin;
 
-  beforeEach(() => {
-    // Reset mocks before each test
-    authService.login.mockReset();
-
-    // In the actual component, we call `useNavigate()`
-    // We'll store that mock here to check calls
-    navigateMock = jest.fn();
-    // We can override the mock implemented above if needed
-    jest.mock('react-router-dom', () => {
-      const original = jest.requireActual('react-router-dom');
-      return {
-        ...original,
-        useNavigate: () => navigateMock,
-      };
-    });
-  });
-
-  it('renders the login form', () => {
-    render(
-      <MemoryRouter>
-        <Login />
-      </MemoryRouter>
-    );
-
-    // Check for presence of email/password inputs and the submit button
-    expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /submit/i })).toBeInTheDocument();
-  });
-
-  it('calls authService.login on form submit and navigates on success', async () => {
-    // Mock a successful login
-    authService.login.mockResolvedValueOnce('fake-jwt-token');
-
-    render(
-      <MemoryRouter>
-        <Login />
-      </MemoryRouter>
-    );
-
-    // Fill out the form
-    const emailInput = screen.getByLabelText(/email/i);
-    const passwordInput = screen.getByLabelText(/password/i);
-    const submitButton = screen.getByRole('button', { name: /submit/i });
-
-    userEvent.type(emailInput, 'test@example.com');
-    userEvent.type(passwordInput, 'SuperSecret!');
-    userEvent.click(submitButton);
-
-    // Wait for the login call to finish
-    await waitFor(() => {
-      expect(authService.login).toHaveBeenCalledTimes(1);
-      expect(authService.login).toHaveBeenCalledWith('test@example.com', 'SuperSecret!');
+    beforeEach(() => {
+        mockLogin = jest.fn();
     });
 
-    // Verify that navigation is called with "/dashboard"
-    expect(navigateMock).toHaveBeenCalledWith('/dashboard');
-  });
+    const renderLoginPage = () => {
+        render(
+            <AuthContext.Provider value={{ login: mockLogin, isAuthenticated: false }}>
+                <MemoryRouter>
+                    <Login />
+                </MemoryRouter>
+            </AuthContext.Provider>
+        );
+    };
 
-  it('shows an error message if login fails', async () => {
-    // Mock a failed login
-    authService.login.mockRejectedValueOnce(new Error('Invalid credentials'));
+    test('renders login page with necessary fields and button', () => {
+        renderLoginPage();
 
-    render(
-      <MemoryRouter>
-        <Login />
-      </MemoryRouter>
-    );
-
-    // Fill out the form
-    userEvent.type(screen.getByLabelText(/email/i), 'baduser@example.com');
-    userEvent.type(screen.getByLabelText(/password/i), 'WrongPassword');
-    userEvent.click(screen.getByRole('button', { name: /submit/i }));
-
-    // Wait for the error to be displayed
-    await waitFor(() => {
-      expect(authService.login).toHaveBeenCalledTimes(1);
-      expect(screen.getByText(/invalid credentials/i)).toBeInTheDocument();
+        expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
+        expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: /login/i })).toBeInTheDocument();
     });
-  });
 
-  it('shows an error if email or password is empty', async () => {
-    render(
-      <MemoryRouter>
-        <Login />
-      </MemoryRouter>
-    );
+    test('displays error on empty form submission', async () => {
+        renderLoginPage();
 
-    // Leave inputs blank
-    userEvent.click(screen.getByRole('button', { name: /submit/i }));
+        const loginButton = screen.getByRole('button', { name: /login/i });
+        fireEvent.click(loginButton);
 
-    // An error message should appear without calling authService.login
-    await waitFor(() => {
-      expect(authService.login).not.toHaveBeenCalled();
-      expect(screen.getByText(/please provide both email and password\./i)).toBeInTheDocument();
+        expect(await screen.findByText(/email is required/i)).toBeInTheDocument();
+        expect(await screen.findByText(/password is required/i)).toBeInTheDocument();
     });
-  });
+
+    test('calls login function with valid credentials', async () => {
+        renderLoginPage();
+
+        const emailInput = screen.getByLabelText(/email/i);
+        const passwordInput = screen.getByLabelText(/password/i);
+        const loginButton = screen.getByRole('button', { name: /login/i });
+
+        fireEvent.change(emailInput, { target: { value: 'user@example.com' } });
+        fireEvent.change(passwordInput, { target: { value: 'password123' } });
+        fireEvent.click(loginButton);
+
+        await waitFor(() => {
+            expect(mockLogin).toHaveBeenCalledWith('user@example.com', 'password123');
+        });
+    });
+
+    test('displays error on invalid credentials', async () => {
+        mockLogin.mockRejectedValueOnce(new Error('Invalid credentials'));
+        renderLoginPage();
+
+        const emailInput = screen.getByLabelText(/email/i);
+        const passwordInput = screen.getByLabelText(/password/i);
+        const loginButton = screen.getByRole('button', { name: /login/i });
+
+        fireEvent.change(emailInput, { target: { value: 'user@example.com' } });
+        fireEvent.change(passwordInput, { target: { value: 'wrongpassword' } });
+        fireEvent.click(loginButton);
+
+        expect(await screen.findByText(/invalid credentials/i)).toBeInTheDocument();
+    });
+
+    test('redirects user to dashboard on successful login', async () => {
+        mockLogin.mockResolvedValueOnce();
+        const mockNavigate = jest.fn();
+
+        jest.mock('react-router-dom', () => ({
+            ...jest.requireActual('react-router-dom'),
+            useNavigate: () => mockNavigate,
+        }));
+
+        renderLoginPage();
+
+        const emailInput = screen.getByLabelText(/email/i);
+        const passwordInput = screen.getByLabelText(/password/i);
+        const loginButton = screen.getByRole('button', { name: /login/i });
+
+        fireEvent.change(emailInput, { target: { value: 'user@example.com' } });
+        fireEvent.change(passwordInput, { target: { value: 'password123' } });
+        fireEvent.click(loginButton);
+
+        await waitFor(() => {
+            expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
+        });
+    });
+
+    test('disables login button during API request', async () => {
+        mockLogin.mockImplementation(() => new Promise((resolve) => setTimeout(resolve, 1000)));
+        renderLoginPage();
+
+        const loginButton = screen.getByRole('button', { name: /login/i });
+        expect(loginButton).not.toBeDisabled();
+
+        fireEvent.click(loginButton);
+        expect(loginButton).toBeDisabled();
+    });
 });

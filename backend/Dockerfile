@@ -1,4 +1,18 @@
-# Use an official Python runtime as the base image
+# backend/Dockerfile
+
+### Description:
+Ensure Dockerfile aligns with deployment requirements.
+
+### Requirements:
+- Ensure environment variables are passed correctly.
+- Validate build and runtime stages.
+- Optimize for production deployment.
+
+### Integration:
+- Validate compatibility with `docker-compose.yml`.
+- Ensure proper API endpoint configuration.
+
+# Use an official Python runtime as a parent image
 FROM python:3.9-slim
 
 # Set environment variables
@@ -8,16 +22,27 @@ ENV PYTHONUNBUFFERED 1
 # Set the working directory
 WORKDIR /app
 
-# Copy requirements.txt and install dependencies
-COPY requirements.txt /app/requirements.txt
-RUN pip install --upgrade pip \
-    && pip install -r requirements.txt
+# Install system dependencies
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    build-essential \
+    libpq-dev \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Copy the backend source code
-COPY ./src /app/src
+# Install dependencies
+COPY ./requirements.txt /app/requirements.txt
+RUN pip install --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
 
-# Expose the port the Flask app runs on
+# Copy application code
+COPY . /app
+
+# Set environment variables for Flask
+ENV FLASK_APP=src.server
+ENV FLASK_ENV=production
+
+# Expose the necessary port
 EXPOSE 5000
 
-# Set the entrypoint for the Flask application
-CMD ["gunicorn", "-b", "0.0.0.0:5000", "src.server:app"]
+# Start the Flask application
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "src.server:app"]
