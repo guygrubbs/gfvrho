@@ -1,0 +1,61 @@
+// frontend/src/styles/variables.scss
+
+// ========================================
+// SCSS Variables for gfvrho Frontend
+// Centralized configuration for colors, typography, and spacing.
+// ========================================
+
+// Color Scheme
+$color-primary: #003366; // Navy Blue
+$color-secondary: #EFEFEF; // Light Grey
+$color-accent: #00A676; // Emerald Green
+$color-text-primary: #333333;
+$color-text-secondary: #666666;
+$color-background: #FFFFFF;
+
+// Typography
+$font-primary: 'Poppins', sans-serif;
+$font-secondary: 'Open Sans', sans-serif;
+
+// Font Sizes
+$font-size-xs: 0.75rem; // 12px
+$font-size-sm: 0.875rem; // 14px
+$font-size-md: 1rem; // 16px
+$font-size-lg: 1.125rem; // 18px
+$font-size-xl: 1.5rem; // 24px
+$font-size-2xl: 2rem; // 32px
+
+// Spacing
+$spacing-xs: 0.5rem; // 8px
+$spacing-sm: 1rem; // 16px
+$spacing-md: 1.5rem; // 24px
+$spacing-lg: 2rem; // 32px
+$spacing-xl: 3rem; // 48px
+
+// Breakpoints
+$breakpoint-xs: 480px;
+$breakpoint-sm: 768px;
+$breakpoint-md: 1024px;
+$breakpoint-lg: 1280px;
+$breakpoint-xl: 1440px;
+
+// Shadows
+$box-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.1);
+$box-shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+$box-shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+
+// Border Radius
+$border-radius-sm: 4px;
+$border-radius-md: 8px;
+$border-radius-lg: 12px;
+
+// Transition
+$transition-fast: 0.2s ease-in-out;
+$transition-medium: 0.4s ease-in-out;
+$transition-slow: 0.6s ease-in-out;
+
+// ========================================
+// Usage Example
+// In your SCSS files, you can import these variables:
+// @import './variables.scss';
+// ========================================

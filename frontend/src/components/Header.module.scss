@@ -1,0 +1,128 @@
+/* frontend/src/components/Header/Header.module.scss */
+
+/* Base Header Styles */
+.header {
+    background-color: #003366;
+    color: #FFFFFF;
+    font-family: 'Poppins', sans-serif;
+    padding: 0.75rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Logo Styles */
+.header__logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #FFFFFF;
+    text-decoration: none;
+
+    &:hover {
+        color: #00A676;
+    }
+}
+
+/* Navigation Menu */
+.header__nav {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+/* Navigation Links */
+.header__link {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #FFFFFF;
+    text-decoration: none;
+    transition: color 0.2s ease-in-out;
+
+    &:hover {
+        color: #00A676;
+    }
+}
+
+/* CTA Button */
+.header__cta {
+    background-color: #00A676;
+    color: #FFFFFF;
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+    font-size: 1rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background-color 0.2s ease-in-out;
+
+    &:hover {
+        background-color: #00885A;
+    }
+}
+
+/* Mobile Menu Toggle Button */
+.header__menu-toggle {
+    display: none;
+    font-size: 1.5rem;
+    color: #FFFFFF;
+    cursor: pointer;
+    background: none;
+    border: none;
+}
+
+/* Mobile Menu */
+.header__mobile-nav {
+    display: none;
+    flex-direction: column;
+    gap: 1rem;
+    background-color: #003366;
+    padding: 1rem;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 999;
+}
+
+/* Show Mobile Menu */
+.header__mobile-nav--active {
+    display: flex;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .header__nav {
+        display: none;
+    }
+
+    .header__menu-toggle {
+        display: block;
+    }
+
+    .header__mobile-nav {
+        display: none;
+    }
+
+    .header__mobile-nav--active {
+        display: flex;
+    }
+}
+
+@media (max-width: 480px) {
+    .header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .header__logo {
+        margin-bottom: 0.5rem;
+    }
+
+    .header__cta {
+        font-size: 0.875rem;
+        padding: 0.25rem 0.5rem;
+    }
+}

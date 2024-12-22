@@ -1,0 +1,75 @@
+# docker-compose.yml
+
+version: '3.8'
+
+services:
+  backend:
+    container_name: gfvrho-backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_ENV=production
+      - DATABASE_URL=postgresql://user:password@db:5432/gfvrho
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - STRIPE_API_KEY=${STRIPE_API_KEY}
+    depends_on:
+      - db
+    restart: unless-stopped
+    networks:
+      - gfvrho-network
+
+  frontend:
+    container_name: gfvrho-frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_API_URL=http://backend:5000
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - gfvrho-network
+
+  db:
+    container_name: gfvrho-db
+    image: postgres:14
+    environment:
+      POSTGRES_DB: gfvrho
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      - gfvrho-network
+
+  nginx:
+    container_name: gfvrho-nginx
+    image: nginx:latest
+    volumes:
+      - ./infrastructure/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - frontend
+      - backend
+    restart: unless-stopped
+    networks:
+      - gfvrho-network
+
+networks:
+  gfvrho-network:
+    driver: bridge
+
+volumes:
+  postgres-data:

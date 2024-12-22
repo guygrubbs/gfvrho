@@ -1,0 +1,63 @@
+/* frontend/src/styles/tailwind.css */
+
+/* Tailwind CSS Directives */
+
+/* 1. Base Styles */
+/* Includes preflight (reset styles) and common typography styles */
+@tailwind base;
+
+/* 2. Component Styles */
+/* Includes reusable component classes */
+@tailwind components;
+
+/* 3. Utility Styles */
+/* Includes utility classes for fast styling */
+@tailwind utilities;
+
+/* 4. Custom Base Styles (Optional Overrides) */
+body {
+  @apply bg-white text-gray-800 antialiased;
+}
+
+/* 5. Root Theme Variables (Custom CSS Variables for Theme) */
+:root {
+  --primary-color: #003366; /* Navy Blue */
+  --secondary-color: #EFEFEF; /* Light Grey */
+  --accent-color: #00A676; /* Emerald Green */
+
+  --font-primary: 'Poppins', sans-serif;
+  --font-secondary: 'Open Sans', sans-serif;
+}
+
+/* 6. Custom Classes (Optional Reusable Styles) */
+.container {
+  @apply mx-auto px-4 sm:px-6 lg:px-8;
+}
+
+.button-primary {
+  @apply bg-[var(--primary-color)] text-white font-medium rounded-md px-4 py-2 hover:bg-[var(--accent-color)] transition-all duration-300;
+}
+
+.button-secondary {
+  @apply bg-[var(--secondary-color)] text-[var(--primary-color)] font-medium rounded-md px-4 py-2 hover:bg-gray-300 transition-all duration-300;
+}
+
+/* 7. Scrollbar Customization */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--secondary-color);
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--primary-color);
+  border-radius: 20px;
+  border: 2px solid var(--secondary-color);
+}
+
+/* 8. Accessibility Focus States */
+*:focus {
+  @apply outline-none ring-2 ring-[var(--accent-color)] ring-offset-2;
+}
