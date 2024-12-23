@@ -1,40 +1,15 @@
-// frontend/src/hooks/useAuth.js
+// Correct AuthContext import
+import { AuthContext } from '../context/AuthContext'; // Ensure named import for AuthContext
+import { useContext } from 'react';
 
-import { useContext, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import AuthContext from '../context/AuthContext';
+function useAuth() {
+    const context = useContext(AuthContext);
 
-/**
- * useAuth - Custom hook for managing authentication guards.
- * 
- * ### Features:
- * - Protect routes by validating authentication status.
- * - Redirect unauthenticated users to the login page.
- * - Preserve the intended route for post-login redirection.
- */
-const useAuth = () => {
-    const { isAuthenticated, loading, user } = useContext(AuthContext);
-    const navigate = useNavigate();
-    const location = useLocation();
+    if (!context) {
+        throw new Error('useAuth must be used within an AuthProvider');
+    }
 
-    useEffect(() => {
-        if (loading) return; // Prevent redirect while auth state is still loading
-
-        if (!isAuthenticated) {
-            // Store the current location to redirect after successful login
-            navigate('/login', { state: { from: location } });
-        }
-    }, [isAuthenticated, loading, navigate, location]);
-
-    /**
-     * getRedirectPath - Determine the post-login redirection path.
-     * @returns {string} Path to redirect after successful login.
-     */
-    const getRedirectPath = () => {
-        return location.state?.from?.pathname || '/dashboard';
-    };
-
-    return { isAuthenticated, user, loading, getRedirectPath };
-};
+    return context;
+}
 
 export default useAuth;
