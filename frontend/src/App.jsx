@@ -1,7 +1,7 @@
 // frontend/src/App.jsx
 
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import Routes from './router/Routes';
 import Header from './components/Header';
 import Footer from './components/Footer';
 
@@ -12,6 +12,7 @@ import Dashboard from './pages/Dashboard';
 import About from './pages/About';
 import Features from './pages/Features';
 import Viewer from './pages/Viewer';
+import { AuthProvider } from './context/AuthContext';
 
 // App Component
 function App() {
@@ -23,15 +24,7 @@ function App() {
 
       {/* Main Content */}
       <main className="flex-grow">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/features" element={<Features />} />
-          <Route path="/viewer" element={<Viewer />} />
-          <Route path="*" element={<div className="text-center mt-8 text-red-500">404 - Page Not Found</div>} />
-        </Routes>
+        <Routes />
       </main>
 
       {/* Footer */}
