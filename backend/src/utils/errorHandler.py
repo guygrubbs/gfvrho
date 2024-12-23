@@ -1,83 +1,58 @@
-# backend/src/utils/errorHandler.py
-
-"""
-Description:
-Ensure consistent error handling across backend services.
-
-Requirements:
-- Standardize error responses.
-- Ensure HTTP status codes are accurate.
-
-Integration:
-- Validate integration with `authController`, `reportController`, and `userController`.
-- Ensure unhandled errors are logged properly.
-"""
-
 import logging
 from flask import jsonify
-from werkzeug.exceptions import HTTPException
 
-# Initialize Logger
+# Configure logger
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
+handler = logging.StreamHandler()
+handler.setLevel(logging.INFO)
+formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
 
 
-class ApiError(Exception):
+class APIError(Exception):
     """
-    Custom API Exception class for controlled error handling.
+    Custom Exception for API errors.
     """
-    def __init__(self, message, status_code=400):
-        super().__init__(message)
+    def __init__(self, message, status_code=400, payload=None):
+        super().__init__()
         self.message = message
         self.status_code = status_code
+        self.payload = payload
+
+    def to_dict(self):
+        response = dict(self.payload or ())
+        response['error'] = self.message
+        return response
 
 
 def handle_api_error(error):
     """
-    Handles custom ApiError exceptions.
+    Handle custom APIError exceptions.
     """
-    logger.error(f"API Error: {error.message}")
-    response = {
-        "error": {
-            "message": error.message,
-            "status_code": error.status_code
-        }
-    }
-    return jsonify(response), error.status_code
+    logger.error(f"APIError: {error.message}")
+    response = jsonify(error.to_dict())
+    response.status_code = error.status_code
+    return response
 
 
-def handle_http_exception(error):
+def handle_generic_error(error):
     """
-    Handles standard HTTP exceptions.
+    Handle unexpected server errors.
     """
-    logger.error(f"HTTP Exception: {error.description}")
-    response = {
-        "error": {
-            "message": error.description,
-            "status_code": error.code
-        }
-    }
-    return jsonify(response), error.code
+    logger.exception("Unhandled Exception occurred", exc_info=error)
+    response = jsonify({
+        'error': 'An unexpected error occurred. Please try again later.'
+    })
+    response.status_code = 500
+    return response
 
 
-def handle_unexpected_exception(error):
-    """
-    Handles unexpected exceptions (500 Internal Server Error).
-    """
-    logger.exception("Unexpected Server Error")
-    response = {
-        "error": {
-            "message": "An unexpected error occurred. Please try again later.",
-            "status_code": 500
-        }
-    }
-    return jsonify(response), 500
-
-
-# Integration with Flask app
 def register_error_handlers(app):
     """
-    Register error handlers with the Flask application.
+    Register error handlers with the Flask app.
     """
-    app.register_error_handler(ApiError, handle_api_error)
-    app.register_error_handler(HTTPException, handle_http_exception)
-    app.register_error_handler(Exception, handle_unexpected_exception)
+    app.register_error_handler(APIError, handle_api_error)
+    app.register_error_handler(Exception, handle_generic_error)

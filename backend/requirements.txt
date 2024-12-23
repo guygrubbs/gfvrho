@@ -33,6 +33,3 @@ python-dotenv==1.0.0
 
 # Security
 cryptography==41.0.7
-
-# Ensure Compatibility with Python 3.9+
-python_version>=3.9
