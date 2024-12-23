@@ -1,39 +1,31 @@
 /* frontend/src/styles/tailwind.css */
 
 /* Tailwind CSS Directives */
-
-/* 1. Base Styles */
-/* Includes preflight (reset styles) and common typography styles */
 @tailwind base;
-
-/* 2. Component Styles */
-/* Includes reusable component classes */
 @tailwind components;
-
-/* 3. Utility Styles */
-/* Includes utility classes for fast styling */
 @tailwind utilities;
 
-/* 4. Custom Base Styles (Optional Overrides) */
+/* Body Base Styles */
 body {
   @apply bg-white text-gray-800 antialiased;
 }
 
-/* 5. Root Theme Variables (Custom CSS Variables for Theme) */
+/* Root Theme Variables */
 :root {
-  --primary-color: #003366; /* Navy Blue */
-  --secondary-color: #EFEFEF; /* Light Grey */
-  --accent-color: #00A676; /* Emerald Green */
+  --primary-color: #003366;
+  --secondary-color: #EFEFEF;
+  --accent-color: #00A676;
 
   --font-primary: 'Poppins', sans-serif;
   --font-secondary: 'Open Sans', sans-serif;
 }
 
-/* 6. Custom Classes (Optional Reusable Styles) */
+/* Container Utility */
 .container {
   @apply mx-auto px-4 sm:px-6 lg:px-8;
 }
 
+/* Button Styles */
 .button-primary {
   @apply bg-[var(--primary-color)] text-white font-medium rounded-md px-4 py-2 hover:bg-[var(--accent-color)] transition-all duration-300;
 }
@@ -42,7 +34,7 @@ body {
   @apply bg-[var(--secondary-color)] text-[var(--primary-color)] font-medium rounded-md px-4 py-2 hover:bg-gray-300 transition-all duration-300;
 }
 
-/* 7. Scrollbar Customization */
+/* Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
 }
@@ -55,9 +47,4 @@ body {
   background-color: var(--primary-color);
   border-radius: 20px;
   border: 2px solid var(--secondary-color);
-}
-
-/* 8. Accessibility Focus States */
-*:focus {
-  @apply outline-none ring-2 ring-[var(--accent-color)] ring-offset-2;
 }

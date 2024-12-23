@@ -1,9 +1,5 @@
 /* frontend/src/styles/global.css */
 
-/* ================================
-   Global Styles
-=================================== */
-
 /* Base Reset */
 *,
 *::before,
@@ -72,112 +68,9 @@ button:disabled {
     padding: 0 1rem;
 }
 
-.text-center {
-    text-align: center;
-}
-
-.hidden {
-    display: none;
-}
-
-.visible {
-    display: block;
-}
-
 /* Responsive Design */
 @media (max-width: 768px) {
     .container {
         padding: 0 0.5rem;
     }
-
-    body {
-        font-size: 14px;
-    }
-
-    h1 {
-        font-size: 1.75rem;
-    }
-
-    h2 {
-        font-size: 1.5rem;
-    }
-}
-
-@media (max-width: 480px) {
-    h1 {
-        font-size: 1.5rem;
-    }
-
-    h2 {
-        font-size: 1.25rem;
-    }
-}
-
-/* Scrollbar Customization */
-::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-}
-
-::-webkit-scrollbar-track {
-    background: var(--secondary-color);
-}
-
-::-webkit-scrollbar-thumb {
-    background: var(--primary-color);
-    border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: var(--accent-color);
-}
-
-/* Global Component Overrides */
-input, textarea {
-    font-family: var(--font-secondary);
-    border: 1px solid var(--secondary-color);
-    padding: 0.5rem;
-    border-radius: 4px;
-    outline: none;
-    transition: var(--transition-default);
-}
-
-input:focus,
-textarea:focus {
-    border-color: var(--accent-color);
-    box-shadow: 0 0 5px rgba(0, 166, 118, 0.2);
-}
-
-/* Animation Utilities */
-.fade-in {
-    animation: fadeIn 0.5s ease-in-out;
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
-}
-
-/* Page-Specific Adjustments */
-.page-header {
-    text-align: center;
-    margin-bottom: 2rem;
-}
-
-.page-footer {
-    text-align: center;
-    margin-top: 2rem;
-    padding: 1rem 0;
-    background-color: var(--secondary-color);
-}
-
-/* Error Message */
-.error-message {
-    color: red;
-    font-size: 0.875rem;
-    margin-top: 0.25rem;
 }

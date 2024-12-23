@@ -1,16 +1,17 @@
-// frontend/src/index.js
-
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { BrowserRouter } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
 import App from './App';
-import './styles/global.css';
-import './styles/tailwind.css';
+import './styles/global.css'; // Ensure global styles are imported
+import './styles/tailwind.css'; // Ensure TailwindCSS is loaded
 
-// Root of the application
-const root = ReactDOM.createRoot(document.getElementById('root'));
-
-root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
+ReactDOM.createRoot(document.getElementById('root')).render(
+    <React.StrictMode>
+        <BrowserRouter>
+            <AuthProvider>
+                <App />
+            </AuthProvider>
+        </BrowserRouter>
+    </React.StrictMode>
 );

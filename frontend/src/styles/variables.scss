@@ -1,61 +1,108 @@
-// frontend/src/styles/variables.scss
+/* ===================================== */
+/* Global SCSS Variables                 */
+/* ===================================== */
 
-// ========================================
-// SCSS Variables for gfvrho Frontend
-// Centralized configuration for colors, typography, and spacing.
-// ========================================
+/* Color Palette */
+$primary-color: #4F46E5; // Primary brand color
+$secondary-color: #6366F1; // Secondary brand color
+$background-color: #1E293B; // Default background color
+$text-color: #FFFFFF; // Primary text color
+$header-bg-color: #0F172A; // Specific header background
+$footer-bg-color: #1E293B; // Specific footer background
+$link-hover-color: #818CF8; // Hover color for links
+$error-color: #EF4444; // Error states
+$success-color: #22C55E; // Success states
 
-// Color Scheme
-$color-primary: #003366; // Navy Blue
-$color-secondary: #EFEFEF; // Light Grey
-$color-accent: #00A676; // Emerald Green
-$color-text-primary: #333333;
-$color-text-secondary: #666666;
-$color-background: #FFFFFF;
+/* Typography */
+$font-family-primary: 'Inter', sans-serif; // Default font
+$font-size-small: 0.875rem; // Small text
+$font-size-medium: 1rem; // Medium text
+$font-size-large: 1.25rem; // Large text
+$font-size-title: 1.5rem; // Title text
 
-// Typography
-$font-primary: 'Poppins', sans-serif;
-$font-secondary: 'Open Sans', sans-serif;
+/* Spacing */
+$spacing-small: 0.5rem;
+$spacing-medium: 1rem;
+$spacing-large: 1.5rem;
+$spacing-xlarge: 2rem;
 
-// Font Sizes
-$font-size-xs: 0.75rem; // 12px
-$font-size-sm: 0.875rem; // 14px
-$font-size-md: 1rem; // 16px
-$font-size-lg: 1.125rem; // 18px
-$font-size-xl: 1.5rem; // 24px
-$font-size-2xl: 2rem; // 32px
+/* Borders */
+$border-radius-small: 4px;
+$border-radius-medium: 8px;
+$border-radius-large: 12px;
 
-// Spacing
-$spacing-xs: 0.5rem; // 8px
-$spacing-sm: 1rem; // 16px
-$spacing-md: 1.5rem; // 24px
-$spacing-lg: 2rem; // 32px
-$spacing-xl: 3rem; // 48px
+/* Shadows */
+$box-shadow-light: 0 1px 3px rgba(0, 0, 0, 0.1);
+$box-shadow-medium: 0 4px 6px rgba(0, 0, 0, 0.1);
+$box-shadow-heavy: 0 10px 15px rgba(0, 0, 0, 0.2);
 
-// Breakpoints
-$breakpoint-xs: 480px;
-$breakpoint-sm: 768px;
-$breakpoint-md: 1024px;
-$breakpoint-lg: 1280px;
-$breakpoint-xl: 1440px;
+/* Layout */
+$header-height: 60px;
+$footer-height: 80px;
 
-// Shadows
-$box-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.1);
-$box-shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
-$box-shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+/* Breakpoints */
+$breakpoint-mobile: 640px;
+$breakpoint-tablet: 768px;
+$breakpoint-desktop: 1024px;
+$breakpoint-large-desktop: 1280px;
 
-// Border Radius
-$border-radius-sm: 4px;
-$border-radius-md: 8px;
-$border-radius-lg: 12px;
-
-// Transition
+/* Transitions */
 $transition-fast: 0.2s ease-in-out;
-$transition-medium: 0.4s ease-in-out;
-$transition-slow: 0.6s ease-in-out;
+$transition-medium: 0.3s ease-in-out;
+$transition-slow: 0.5s ease-in-out;
 
-// ========================================
-// Usage Example
-// In your SCSS files, you can import these variables:
-// @import './variables.scss';
-// ========================================
+/* Z-Index */
+$z-index-header: 1000;
+$z-index-footer: 900;
+$z-index-modal: 1100;
+
+/* Miscellaneous */
+$max-content-width: 1200px;
+
+/* ===================================== */
+/* CSS Variables for Global Usage        */
+/* ===================================== */
+
+:root {
+    --primary-color: #{$primary-color};
+    --secondary-color: #{$secondary-color};
+    --background-color: #{$background-color};
+    --text-color: #{$text-color};
+    --header-bg-color: #{$header-bg-color};
+    --footer-bg-color: #{$footer-bg-color};
+    --link-hover-color: #{$link-hover-color};
+    --error-color: #{$error-color};
+    --success-color: #{$success-color};
+
+    --font-family-primary: #{$font-family-primary};
+    --font-size-small: #{$font-size-small};
+    --font-size-medium: #{$font-size-medium};
+    --font-size-large: #{$font-size-large};
+    --font-size-title: #{$font-size-title};
+
+    --spacing-small: #{$spacing-small};
+    --spacing-medium: #{$spacing-medium};
+    --spacing-large: #{$spacing-large};
+    --spacing-xlarge: #{$spacing-xlarge};
+
+    --border-radius-small: #{$border-radius-small};
+    --border-radius-medium: #{$border-radius-medium};
+    --border-radius-large: #{$border-radius-large};
+
+    --box-shadow-light: #{$box-shadow-light};
+    --box-shadow-medium: #{$box-shadow-medium};
+    --box-shadow-heavy: #{$box-shadow-heavy};
+
+    --header-height: #{$header-height};
+    --footer-height: #{$footer-height};
+
+    --transition-fast: #{$transition-fast};
+    --transition-medium: #{$transition-medium};
+    --transition-slow: #{$transition-slow};
+
+    --z-index-header: #{$z-index-header};
+    --z-index-footer: #{$z-index-footer};
+    --z-index-modal: #{$z-index-modal};
+
+    --max-content-width: #{$max-content-width};
+}
