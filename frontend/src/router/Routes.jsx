@@ -1,48 +1,41 @@
-// frontend/src/router/Routes.jsx
-
 import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import Loader from '../components/Loader';
 
-// Lazy-loaded components for better performance
+// Lazy-loaded Components
 const Home = lazy(() => import('../pages/Home'));
-const About = lazy(() => import('../pages/About'));
 const Dashboard = lazy(() => import('../pages/Dashboard'));
-const Features = lazy(() => import('../pages/Features'));
 const Login = lazy(() => import('../pages/Login'));
+const Features = lazy(() => import('../pages/Features'));
 const Viewer = lazy(() => import('../pages/Viewer'));
 const NotFound = lazy(() => import('../pages/NotFound'));
 
 /**
- * ProtectedRoute Component
- * Ensures only authenticated users can access protected routes
+ * Protected Route Component
+ * Ensures only authenticated users can access protected routes.
  */
 const ProtectedRoute = ({ children }) => {
     const { user } = useAuth();
-
-    if (!user) {
-        return <Navigate to="/login" replace />;
-    }
-
-    return children;
+    return user ? children : <Navigate to="/login" replace />;
 };
 
 /**
- * Application Routes Configuration
+ * Application Routes
+ * Define all application routes with proper configurations.
  */
 const AppRoutes = () => {
     return (
         <Router>
             <Header />
-            <Suspense fallback={<div>Loading...</div>}>
+            <Suspense fallback={<Loader />}>
                 <Routes>
                     {/* Public Routes */}
-                    <Route path="/" element={<Home />} exact />
-                    <Route path="/about" element={<About />} exact />
-                    <Route path="/features" element={<Features />} exact />
-                    <Route path="/login" element={<Login />} exact />
+                    <Route path="/" element={<Home />} />
+                    <Route path="/features" element={<Features />} />
+                    <Route path="/login" element={<Login />} />
 
                     {/* Protected Routes */}
                     <Route
@@ -52,19 +45,17 @@ const AppRoutes = () => {
                                 <Dashboard />
                             </ProtectedRoute>
                         }
-                        exact
                     />
                     <Route
-                        path="/viewer/:reportId"
+                        path="/viewer/:id"
                         element={
                             <ProtectedRoute>
                                 <Viewer />
                             </ProtectedRoute>
                         }
-                        exact
                     />
 
-                    {/* Fallback 404 Route */}
+                    {/* Fallback Route */}
                     <Route path="*" element={<NotFound />} />
                 </Routes>
             </Suspense>

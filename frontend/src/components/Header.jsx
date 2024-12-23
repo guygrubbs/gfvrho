@@ -1,69 +1,39 @@
-// frontend/src/components/Header.jsx
-
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import useAuth from '../hooks/useAuth';
+import { Link } from 'react-router-dom';
+import useAuth from '../hooks/useAuth'; // Validate this is a named or default export
 
+/**
+ * Header Component
+ * Provides navigation and authentication controls.
+ */
 const Header = () => {
-    const { user, logout } = useAuth();
-    const navigate = useNavigate();
-
-    const handleLogout = () => {
-        logout();
-        navigate('/login');
-    };
+    const { user, logout } = useAuth(); // Ensure this matches the exported `useAuth`
 
     return (
-        <header className="bg-navy-700 text-white py-4 px-6 shadow-md">
-            <nav className="container mx-auto flex justify-between items-center">
-                {/* Logo */}
-                <Link to="/" className="text-xl font-bold">
-                    GFVRHO
-                </Link>
-
-                {/* Navigation Links */}
-                <ul className="flex space-x-6">
+        <header className="header">
+            <nav>
+                <ul>
                     <li>
-                        <Link to="/" className="hover:text-emerald-400">
-                            Home
-                        </Link>
+                        <Link to="/">Home</Link>
                     </li>
                     <li>
-                        <Link to="/about" className="hover:text-emerald-400">
-                            About
-                        </Link>
+                        <Link to="/features">Features</Link>
                     </li>
                     <li>
-                        <Link to="/features" className="hover:text-emerald-400">
-                            Features
-                        </Link>
+                        <Link to="/dashboard">Dashboard</Link>
                     </li>
                     {user ? (
                         <>
                             <li>
-                                <Link to="/dashboard" className="hover:text-emerald-400">
-                                    Dashboard
-                                </Link>
+                                <Link to="/profile">Profile</Link>
                             </li>
                             <li>
-                                <Link to="/viewer/sample-report" className="hover:text-emerald-400">
-                                    Viewer
-                                </Link>
-                            </li>
-                            <li>
-                                <button
-                                    onClick={handleLogout}
-                                    className="text-red-400 hover:text-red-300"
-                                >
-                                    Logout
-                                </button>
+                                <button onClick={logout}>Logout</button>
                             </li>
                         </>
                     ) : (
                         <li>
-                            <Link to="/login" className="hover:text-emerald-400">
-                                Login
-                            </Link>
+                            <Link to="/login">Login</Link>
                         </li>
                     )}
                 </ul>

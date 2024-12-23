@@ -16,6 +16,7 @@ import Viewer from './pages/Viewer';
 // App Component
 function App() {
   return (
+    <AuthProvider>
     <div className="flex flex-col min-h-screen">
       {/* Header */}
       <Header />
@@ -36,6 +37,7 @@ function App() {
       {/* Footer */}
       <Footer />
     </div>
+    </AuthProvider>
   );
 }
 

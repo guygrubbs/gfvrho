@@ -1,52 +1,59 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { login } from '../services/authService'; // Correct import for login function
+import { login } from '../services/authService';
 import useAuth from '../hooks/useAuth';
 
-function Login() {
+/**
+ * Login Page Component
+ * Handles user login functionality.
+ */
+const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
-    const { setUser, setIsAuthenticated } = useAuth();
+    const [error, setError] = useState(null);
     const navigate = useNavigate();
+    const { login: authLogin } = useAuth();
 
     const handleLogin = async (e) => {
         e.preventDefault();
-        setError('');
+        setError(null);
 
         try {
-            const userData = await login(email, password); // Call login function from authService
-            setUser(userData.user);
-            setIsAuthenticated(true);
-            navigate('/dashboard'); // Redirect to dashboard after successful login
+            const userData = await login(email, password);
+            authLogin(userData); // Update auth context with user data
+            navigate('/dashboard'); // Redirect to Dashboard
         } catch (err) {
-            setError(err.message || 'Failed to login. Please check your credentials.');
+            setError(err.message || 'Failed to login. Please try again.');
         }
     };
 
     return (
-        <div className="login-container">
-            <h2>Login</h2>
+        <div className="login-page">
+            <h1>Login</h1>
             <form onSubmit={handleLogin}>
-                <input
-                    type="email"
-                    placeholder="Email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                />
-                <input
-                    type="password"
-                    placeholder="Password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                />
+                <div>
+                    <label>Email:</label>
+                    <input
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                    />
+                </div>
+                <div>
+                    <label>Password:</label>
+                    <input
+                        type="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                    />
+                </div>
                 {error && <p className="error">{error}</p>}
                 <button type="submit">Login</button>
             </form>
         </div>
     );
-}
+};
 
 export default Login;

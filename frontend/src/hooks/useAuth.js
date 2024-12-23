@@ -1,8 +1,13 @@
-// Correct AuthContext import
-import { AuthContext } from '../context/AuthContext'; // Ensure named import for AuthContext
 import { useContext } from 'react';
+import { AuthContext } from '../context/AuthContext';
 
-function useAuth() {
+/**
+ * Custom hook to access authentication context.
+ * Provides access to user authentication state and actions.
+ *
+ * @returns {object} AuthContext values including user data, login, and logout functions.
+ */
+const useAuth = () => {
     const context = useContext(AuthContext);
 
     if (!context) {
@@ -10,6 +15,6 @@ function useAuth() {
     }
 
     return context;
-}
+};
 
 export default useAuth;

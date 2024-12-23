@@ -2,59 +2,65 @@ import React, { useState } from 'react';
 import { Document, Page, pdfjs } from 'react-pdf';
 import { useParams } from 'react-router-dom';
 
-// Ensure workerSrc is set for react-pdf
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
+// Configure PDF.js worker source
+pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
-function Viewer() {
-    const { pdfId } = useParams(); // Dynamic route parameter for PDF identification
+/**
+ * Viewer Page Component
+ * Renders PDF documents dynamically based on route parameters.
+ */
+const Viewer = () => {
+    const { fileId } = useParams();
     const [numPages, setNumPages] = useState(null);
     const [pageNumber, setPageNumber] = useState(1);
     const [error, setError] = useState(null);
 
     const onDocumentLoadSuccess = ({ numPages }) => {
         setNumPages(numPages);
-        setError(null);
     };
 
-    const onDocumentLoadError = (error) => {
-        console.error('PDF load error:', error);
+    const onDocumentLoadError = (err) => {
+        console.error('Failed to load PDF:', err);
         setError('Failed to load PDF. Please try again later.');
     };
 
-    const handleNextPage = () => {
-        setPageNumber((prevPage) => Math.min(prevPage + 1, numPages));
+    const goToNextPage = () => {
+        setPageNumber((prevPage) => (prevPage < numPages ? prevPage + 1 : prevPage));
     };
 
-    const handlePrevPage = () => {
-        setPageNumber((prevPage) => Math.max(prevPage - 1, 1));
+    const goToPreviousPage = () => {
+        setPageNumber((prevPage) => (prevPage > 1 ? prevPage - 1 : prevPage));
     };
 
     return (
-        <div className="viewer-container">
-            <h2>PDF Viewer</h2>
-            {error && <p className="error">{error}</p>}
-            <div className="pdf-container">
-                <Document
-                    file={`/api/pdfs/${pdfId}`} // Backend endpoint for fetching PDF
-                    onLoadSuccess={onDocumentLoadSuccess}
-                    onLoadError={onDocumentLoadError}
-                >
-                    <Page pageNumber={pageNumber} />
-                </Document>
-            </div>
-            <div className="controls">
-                <button onClick={handlePrevPage} disabled={pageNumber <= 1}>
-                    Previous Page
-                </button>
-                <span>
-                    Page {pageNumber} of {numPages || '...'}
-                </span>
-                <button onClick={handleNextPage} disabled={pageNumber >= numPages}>
-                    Next Page
-                </button>
-            </div>
+        <div className="pdf-viewer">
+            <h1>PDF Viewer</h1>
+            {error ? (
+                <div className="error-message">{error}</div>
+            ) : (
+                <div>
+                    <Document
+                        file={`/api/files/${fileId}.pdf`}
+                        onLoadSuccess={onDocumentLoadSuccess}
+                        onLoadError={onDocumentLoadError}
+                    >
+                        <Page pageNumber={pageNumber} />
+                    </Document>
+                    <p>
+                        Page {pageNumber} of {numPages || '...'}
+                    </p>
+                    <div>
+                        <button onClick={goToPreviousPage} disabled={pageNumber === 1}>
+                            Previous Page
+                        </button>
+                        <button onClick={goToNextPage} disabled={pageNumber === numPages}>
+                            Next Page
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
-}
+};
 
 export default Viewer;
