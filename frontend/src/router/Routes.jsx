@@ -1,3 +1,5 @@
+// src/router/Routes.jsx
+
 import React, { Suspense, lazy } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -5,11 +7,13 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import Loader from '../components/Loader';
 
+// Lazy-loaded Pages
 const Home = lazy(() => import('../pages/Home'));
 const Dashboard = lazy(() => import('../pages/Dashboard'));
 const Login = lazy(() => import('../pages/Login'));
 const Features = lazy(() => import('../pages/Features'));
 const Viewer = lazy(() => import('../pages/Viewer'));
+const About = lazy(() => import('../pages/About'));
 const NotFound = lazy(() => import('../pages/NotFound'));
 
 // Protected Route Component
@@ -20,6 +24,7 @@ const ProtectedRoute = ({ children }) => {
     return user ? children : <Navigate to="/login" replace />;
 };
 
+// Application Routes
 const AppRoutes = () => (
     <>
         <Header />
@@ -28,6 +33,7 @@ const AppRoutes = () => (
                 {/* Public Routes */}
                 <Route path="/" element={<Home />} />
                 <Route path="/features" element={<Features />} />
+                <Route path="/about" element={<About />} />
                 <Route path="/login" element={<Login />} />
 
                 {/* Protected Routes */}

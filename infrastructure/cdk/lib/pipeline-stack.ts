@@ -1,11 +1,8 @@
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { Pipeline, Artifact } from 'aws-cdk-lib/aws-codepipeline';
-import { CodeBuildAction, CodeBuildProject, PipelineProject } from 'aws-cdk-lib/aws-codebuild';
-import { CodePipelineSource, CodePipelineActionFactory } from 'aws-cdk-lib/pipelines';
-import { S3, Bucket } from 'aws-cdk-lib/aws-s3';
-import { CodeBuildStep, CodePipeline, CodePipelineSource } from 'aws-cdk-lib/pipelines';
-import { ManualApprovalStep } from 'aws-cdk-lib/pipelines';
+import { PipelineProject } from 'aws-cdk-lib/aws-codebuild';
+import { Bucket } from 'aws-cdk-lib/aws-s3';
 
 export class PipelineStack extends cdk.Stack {
     constructor(scope: Construct, id: string, props?: cdk.StackProps) {

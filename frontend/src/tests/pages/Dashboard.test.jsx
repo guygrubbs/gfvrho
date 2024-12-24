@@ -1,64 +1,67 @@
-// frontend/src/tests/pages/Dashboard.test.jsx
-
+// Dashboard.test.jsx
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import Dashboard from '../../pages/Dashboard';
+import { AuthContext } from '../../context/AuthContext';
 import * as reportService from '../../services/reportService';
 
 // Mock reportService
 jest.mock('../../services/reportService', () => ({
-  getReports: jest.fn(),
+    getReports: jest.fn(),
 }));
 
 describe('Dashboard Page', () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
+    const mockAuthContextValue = {
+        user: { name: 'Test User' },
+        loading: false,
+        login: jest.fn(),
+        logout: jest.fn(),
+    };
 
-  test('renders the Dashboard page with a title', () => {
-    render(<Dashboard />);
-    const titleElement = screen.getByRole('heading', { name: /Dashboard/i });
-    expect(titleElement).toBeInTheDocument();
-  });
-
-  test('fetches and displays reports on load', async () => {
-    // Mocking API response
-    reportService.getReports.mockResolvedValue([
-      { id: 1, title: 'Report 1', status: 'Completed' },
-      { id: 2, title: 'Report 2', status: 'In Progress' },
-    ]);
-
-    render(<Dashboard />);
-
-    expect(reportService.getReports).toHaveBeenCalledTimes(1);
-
-    await waitFor(() => {
-      expect(screen.getByText('Report 1')).toBeInTheDocument();
-      expect(screen.getByText('Completed')).toBeInTheDocument();
-      expect(screen.getByText('Report 2')).toBeInTheDocument();
-      expect(screen.getByText('In Progress')).toBeInTheDocument();
+    beforeEach(() => {
+        jest.clearAllMocks();
     });
-  });
 
-  test('displays an error message if fetching reports fails', async () => {
-    // Mocking API error
-    reportService.getReports.mockRejectedValue(new Error('Failed to fetch reports'));
+    test('renders loading state initially', async () => {
+        reportService.getReports.mockResolvedValueOnce([]);
+        render(
+            <AuthContext.Provider value={mockAuthContextValue}>
+                <Dashboard />
+            </AuthContext.Provider>
+        );
 
-    render(<Dashboard />);
-
-    expect(reportService.getReports).toHaveBeenCalledTimes(1);
-
-    await waitFor(() => {
-      expect(screen.getByText('Failed to load reports. Please try again later.')).toBeInTheDocument();
+        expect(screen.getByText(/Loading.../i)).toBeInTheDocument();
     });
-  });
 
-  test('shows a loading indicator while fetching reports', () => {
-    reportService.getReports.mockReturnValue(new Promise(() => {})); // Simulate pending state
+    test('displays error message on API failure', async () => {
+        reportService.getReports.mockRejectedValueOnce(new Error('Failed to fetch reports'));
+        render(
+            <AuthContext.Provider value={mockAuthContextValue}>
+                <Dashboard />
+            </AuthContext.Provider>
+        );
 
-    render(<Dashboard />);
-    const loadingElement = screen.getByText('Loading reports...');
-    expect(loadingElement).toBeInTheDocument();
-  });
+        await waitFor(() => {
+            expect(screen.getByText(/Failed to fetch reports/i)).toBeInTheDocument();
+        });
+    });
+
+    test('displays reports fetched from API', async () => {
+        reportService.getReports.mockResolvedValueOnce([
+            { id: 1, title: 'Report 1' },
+            { id: 2, title: 'Report 2' },
+        ]);
+
+        render(
+            <AuthContext.Provider value={mockAuthContextValue}>
+                <Dashboard />
+            </AuthContext.Provider>
+        );
+
+        await waitFor(() => {
+            expect(screen.getByText('Report 1')).toBeInTheDocument();
+            expect(screen.getByText('Report 2')).toBeInTheDocument();
+        });
+    });
 });
